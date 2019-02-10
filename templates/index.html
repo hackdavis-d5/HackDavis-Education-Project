@@ -7,12 +7,13 @@
         <meta content="What this page is about." name="description">
         <meta content="Display Webcam Stream" name="title">
         <title>Display Webcam Stream</title>
-        <!-- <link rel='stylesheet' href='/stylesheets/style.css' /> -->
+        <link rel='stylesheet' href="{{ url_for('static', filename='css/style.css') }}" />
     </head>
     <body>
         <div id="container">
             <video autoplay="true" id="videoElement" controls></video>
-            <canvas></canvas>
+            <canvas style="display: none"></canvas>
+            <p id="output" style="font-family: OpenDyslexic; font-weight: 400; font-size: 48px;"></p>
         </div>
 
         <script src="{{ url_for('static', filename='js/socketio/socket.io.js') }}"></script>
