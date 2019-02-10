@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         },
 
         getFrameAsBase64URL: function() {
+            this.context.drawImage(this.videoElement, 0, 0, this.canvas.width, this.canvas.height);
             return this.canvas.toDataURL('image/jpeg');
         }
     };
@@ -70,5 +71,5 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     setInterval(function() {
         socket.send('rawFrame', video.getFrameAsBase64URL());
-    }, 5000);
+    }, 1000);
 });    

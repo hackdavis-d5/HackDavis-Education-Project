@@ -9,20 +9,21 @@ import time
 import cv2
 import base64
 
+# load the pre-trained EAST text detector
+print("[INFO] loading EAST text detector...")
+net = cv2.dnn.readNet(r"./util/frozen_east_text_detection.pb")
+
 def data_uri_to_cv2_img(uri):
 	encoded_data = uri.split(',')[1]
 	nparr = np.fromstring(base64.b64decode(encoded_data), np.uint8)
 	img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 	return img
 
-
-
 def segmentImage(uri, confidence = .5):
+	print(uri)
 	# load the input image and grab the image dimensions
 		
 	image = data_uri_to_cv2_img(uri)
-
-	print(image)
 
 	orig = image.copy()
 	
@@ -46,10 +47,6 @@ def segmentImage(uri, confidence = .5):
 	layerNames = [
 		"feature_fusion/Conv_7/Sigmoid",
 		"feature_fusion/concat_3"]
-
-	# load the pre-trained EAST text detector
-	print("[INFO] loading EAST text detector...")
-	net = cv2.dnn.readNet(r"./util/frozen_east_text_detection.pb")
 
 	# construct a blob from the image and then perform a forward pass of
 	# the model to obtain the two output layer sets
@@ -132,44 +129,41 @@ def segmentImage(uri, confidence = .5):
 		endY = int(endY * rH)
 		images.append(orig[startY:endY, startX:endX]) # Crop from {x, y, w, h } => {0, 0, 300, 400}
 		images_uri.append(cv2.imencode('.jpeg', orig[startY:endY, startX:endX])[1].tostring()) # Crop from {x, y, w, h } => {0, 0, 300, 400}
-		cv2.imshow("cropped" + str(c), orig[startY:endY, startX:endX])
+		# cv2.imshow("cropped" + str(c), orig[startY:endY, startX:endX])
 		cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
 		c += 1
 		# cv2.waitKey(0)
 		# draw the bounding box on the image
 		
 	# show the output image
-	cv2.imshow("Text Detection", orig)
-	cv2.waitKey(0)
+	# cv2.imshow("Text Detection", orig)
+	# cv2.waitKey(0)
 
-	
+def detect_document_uri(uri):
+    """Detects document features in the file located in Google Cloud
+    Storage."""
+    from google.cloud import vision
+    client = vision.ImageAnnotatorClient()
+    image = vision.types.Image()
+    image.source.image_uri = uri
 
+    response = client.document_text_detection(image=image)
 
-# def detect_document_uri(uri):
-#     """Detects document features in the file located in Google Cloud
-#     Storage."""
-#     from google.cloud import vision
-#     client = vision.ImageAnnotatorClient()
-#     image = vision.types.Image()
-#     image.source.image_uri = uri
+    for page in response.full_text_annotation.pages:
+        for block in page.blocks:
+            print('\nBlock confidence: {}\n'.format(block.confidence))
 
-#     response = client.document_text_detection(image=image)
+            for paragraph in block.paragraphs:
+                print('Paragraph confidence: {}'.format(
+                    paragraph.confidence))
 
-#     for page in response.full_text_annotation.pages:
-#         for block in page.blocks:
-#             print('\nBlock confidence: {}\n'.format(block.confidence))
+                for word in paragraph.words:
+                    word_text = ''.join([
+                        symbol.text for symbol in word.symbols
+                    ])
+                    print('Word text: {} (confidence: {})'.format(
+                        word_text, word.confidence))
 
-#             for paragraph in block.paragraphs:
-#                 print('Paragraph confidence: {}'.format(
-#                     paragraph.confidence))
-
-#                 for word in paragraph.words:
-#                     word_text = ''.join([
-#                         symbol.text for symbol in word.symbols
-#                     ])
-#                     print('Word text: {} (confidence: {})'.format(
-#                         word_text, word.confidence))
-
-#                     for symbol in word.symbols:
-#                         print('\tSymbol: {} (confidence: {})'.format(
-#                             symbol.text, symbol.confidence))
+                    for symbol in word.symbols:
+                        print('\tSymbol: {} (confidence: {})'.format(
+                            symbol.text, symbol.confidence))
