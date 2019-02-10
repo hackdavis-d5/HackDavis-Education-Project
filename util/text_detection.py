@@ -15,6 +15,7 @@ import io
 from skimage.filters.rank import entropy
 from skimage.morphology import disk
 from skimage.measure.entropy import shannon_entropy
+# from google.protobuf.json_format import MessageToDict
 
 net = cv2.dnn.readNet(r"./util/frozen_east_text_detection.pb")
 layerNames = ["feature_fusion/Conv_7/Sigmoid",
@@ -32,8 +33,8 @@ def segmentImage(uri):
 	image = data_uri_to_cv2_img(uri)
 	path = './img/img' + str(time.time()) + '.jpg'
 	cv2.imwrite(path, image)
-	words = detect_document(path)
-	return words;
+	return detect_document(path)
+	
 	# cv2.imwrite(path, thresh)
 
 	# if words != []:
@@ -144,10 +145,28 @@ def segmentImage(uri):
 	# 		endX = int(offsetX + (cos * xData1[x]) + (sin * xData2[x]))
 	# 		endY = int(offsetY - (sin * xData1[x]) + (cos * xData2[x]))
 	# 		startX = int(endX - w)
-	# 		startY = int(endY - h)
+	# 		startY = int(endY - h)						# [
+						# 	{"x": vertices[0]x, "y": vertices[0].y},
+						# 	{"x": vertices[1]x, "y": vertices[1].y},
+						# 	{"x": vertices[2]x, "y": vertices[2].y},
+						# 	{"x": vertices[3]x, "y": vertices[3].y}
+						# ]
+						# vertices_list.append(json.dumps(MessageToDict(word.bounding_box.vertices)))
 
-	# 		# add the bounding box coordinates and probability score to
-	# 		# our respective lists
+	# 		# add the bounding box						# [
+						# 	{"x": vertices[0]x, "y": vertices[0].y},
+						# 	{"x": vertices[1]x, "y": vertices[1].y},
+						# 	{"x": vertices[2]x, "y": vertices[2].y},
+						# 	{"x": vertices[3]x, "y": vertices[3].y}
+						# ]
+						# vertices_list.append(json.dumps(MessageToDict(word.bounding_box.vertices)))ore to
+	# 		# our respective lists						# [
+						# 	{"x": vertices[0]x, "y": vertices[0].y},
+						# 	{"x": vertices[1]x, "y": vertices[1].y},
+						# 	{"x": vertices[2]x, "y": vertices[2].y},
+						# 	{"x": vertices[3]x, "y": vertices[3].y}
+						# ]
+						# vertices_list.append(json.dumps(MessageToDict(word.bounding_box.vertices)))
 	# 		rects.append((startX, startY, endX, endY))
 	# 		confidences.append(scoresData[x])
 
@@ -251,7 +270,7 @@ def detect_document(path):
 		response = client.document_text_detection(image=image)
 
 		word_list = []
-
+		vertices_list = []
 		for page in response.full_text_annotation.pages:
 			for block in page.blocks:
 				for paragraph in block.paragraphs:
@@ -260,5 +279,7 @@ def detect_document(path):
 							symbol.text for symbol in word.symbols
 						])
 						word_list.append(word_text)
+						vs = word.bounding_box.vertices
+						vertices_list.append([ {"x": vs[0].x, "y": vs[0].y}, {"x": vs[1].x, "y": vs[1].y}, {"x": vs[2].x, "y": vs[2].y}, {"x": vs[3].x, "y": vs[3].y}])
 
-		return word_list
+		return word_list, vertices_list
