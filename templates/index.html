@@ -18,7 +18,13 @@
         <!-- <script src="js/imgProcess.js"></script> -->
         <!-- <script src="js/filters.js"></script> -->
 
+        <script src="{{ url_for('static', filename='js/socketio/socket.io.js') }}"></script>
         <script>
+            var socket = io.connect('http://localhost:5000');
+            socket.emit('my event', {data: 'wooooooo data'});
+            socket.on('my response', function(msg) {
+                console.log(msg);
+            });
             var video = document.querySelector("#videoElement");
 
             if (navigator.mediaDevices.getUserMedia) {       
