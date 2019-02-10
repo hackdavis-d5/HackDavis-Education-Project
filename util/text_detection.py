@@ -11,7 +11,7 @@ import cv2
 import base64
 
 
-net = cv2.dnn.readNet(r"frozen_east_text_detection.pb")
+net = cv2.dnn.readNet(r"./util/frozen_east_text_detection.pb")
 layerNames = ["feature_fusion/Conv_7/Sigmoid",
 		"feature_fusion/concat_3"]
 
@@ -128,7 +128,7 @@ def segmentImage(uri, confidence = .5):
 		endX = int(endX * rW)
 		endY = int(endY * rH)
 
-		imageValues.append(startX,startY,endX,endY)
+		imageValues.append((startX,startY,endX,endY) )
 		images_uri_list.append(cv2.imencode('.jpeg', orig[startY:endY, startX:endX])[1].tostring()) 
 		
 		c += 1
@@ -166,8 +166,8 @@ def segmentImage(uri, confidence = .5):
 		
 
 	# show the output image
-	# cv2.imshow("Text Detection", orig)
-	# cv2.waitKey(0)
+	cv2.imshow("Text Detection", orig)
+	cv2.waitKey(0)
 
 def detect_document_uri(uri):
 	"""Detects document features in the file located in Google Cloud
