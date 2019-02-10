@@ -5,22 +5,25 @@
   var w,h,ratio;
   //add loadedmetadata which will helps to identify video attributes
 
-  video.addEventListener('loadedmetadata', function() {
-    ratio = video.videoWidth/video.videoHeight;
-    w = video.videoWidth-100;
+  video.addEventListener('loadedmetadata', function(event) {
+    vd = event.target;
+    console.log(vd);
+    ratio = vd.videoWidth/vd.videoHeight;
+    w = vd.videoWidth-100;
     h = parseInt(w/ratio,10);
     canvas.width = w;
     canvas.height = h;
   },false);
 
-  function snap() {
-    context.fillRect(0,0,w,h);
-    context.drawImage(video,0,0,w,h);
-  }
-  setInterval(snap, 1000);
+  setInterval(function() {
+    const imageData = Filters.getPixels();
+    const thresholdedImageData = Filters.threshold(imageData, 200);
+    context.putImageData(thresholdedImageData, 0, 0);
+  }, 500);
 
 Filters = {};
 Filters.getPixels = function() {
+  context.drawImage(video,0,0,w,h);
   return context.getImageData(0,0,canvas.width,canvas.height);
 };
 
