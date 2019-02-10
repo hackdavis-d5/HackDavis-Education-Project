@@ -5,8 +5,13 @@
 from imutils.object_detection import non_max_suppression
 import numpy as np
 import argparse
+from PIL import ImageFont, ImageDraw, Image
 import time
 import cv2
+
+net = cv2.dnn.readNet(r"frozen_east_text_detection.pb")
+layerNames = ["feature_fusion/Conv_7/Sigmoid",
+		"feature_fusion/concat_3"]
 
 def data_uri_to_cv2_img(uri):
     encoded_data = uri.split(',')[1]
@@ -14,25 +19,8 @@ def data_uri_to_cv2_img(uri):
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     return img
 
-
-
 def segmentImage(uri, confidence = .5):
-	# construct the argument parser and parse the arguments
-	# ap = argparse.ArgumentParser()
-	# ap.add_argument("-i", "--image", type=str,
-	# 	help="path to input image")
-	# ap.add_argument("-east", "--east", type=str,
-	# 	help="path to input EAST text detector")
-	# ap.add_argument("-c", "--min-confidence", type=float, default=0.5,
-	# 	help="minimum probability required to inspect a region")
-	# ap.add_argument("-w", "--width", type=int, default=320,
-	# 	help="resized image width (should be multiple of 32)")
-	# ap.add_argument("-e", "--height", type=int, default=320,
-	# 	help="resized image height (should be multiple of 32)")
-	# args = vars(ap.parse_args())
 
-	# load the input image and grab the image dimensions
-		
 	image = data_uri_to_cv2_img(uri)
 
 	orig = image.copy()
@@ -54,13 +42,10 @@ def segmentImage(uri, confidence = .5):
 	# define the two output layer names for the EAST detector model that
 	# we are interested -- the first is the output probabilities and the
 	# second can be used to derive the bounding box coordinates of text
-	layerNames = [
-		"feature_fusion/Conv_7/Sigmoid",
-		"feature_fusion/concat_3"]
 
 	# load the pre-trained EAST text detector
 	print("[INFO] loading EAST text detector...")
-	net = cv2.dnn.readNet(r"frozen_east_text_detection.pb")
+	
 
 	# construct a blob from the image and then perform a forward pass of
 	# the model to obtain the two output layer sets
@@ -133,7 +118,8 @@ def segmentImage(uri, confidence = .5):
 	# loop over the bounding boxes
 	c = 0
 	images = []
-	images_uri = []
+	imageValues = []
+	images_uri_list = []
 	for (startX, startY, endX, endY) in boxes:
 		# scale the bounding box coordinates based on the respective
 		# ratios
@@ -141,14 +127,43 @@ def segmentImage(uri, confidence = .5):
 		startY = int(startY * rH)
 		endX = int(endX * rW)
 		endY = int(endY * rH)
-		images.append(orig[startY:endY, startX:endX]) # Crop from {x, y, w, h } => {0, 0, 300, 400}
-		images_uri.append(cv2.imencode('.jpeg', orig[startY:endY, startX:endX])[1].tostring()) # Crop from {x, y, w, h } => {0, 0, 300, 400}
-		cv2.imshow("cropped" + str(c), orig[startY:endY, startX:endX])
-		cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
+		
+		imageValues.append(startX,startY,endX,endY)
+		images_uri_list.append(cv2.imencode('.jpeg', orig[startY:endY, startX:endX])[1].tostring()) 
+		
 		c += 1
+		# For testing
+		# images.append(orig[startY:endY, startX:endX]) # Crop from {x, y, w, h } => {0, 0, 300, 400}
+		# cv2.imshow("cropped" + str(c), orig[startY:endY, startX:endX])
+		# cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
+
+		
 		#cv2.waitKey(0)
 		# draw the bounding box on the image
+	word_selections = []
+	b,g,r,a = 0,0,0,0
+
+	
+	for image_uri in images_uri_list:
+		word_selections.append(detect_document_uri(image_uri))
+
+	for i in range(len(word_selections)):
+		# Image Vals => (startX, startY,endX,endY)
+		startX = imageValues[i][0]
+		startY = imageValues[i][1]
+		endX = imageValues[i][2]
+		endY = imageValues[i][3]
+
+		temp_img = np.full( shape=(endX-startX, endY-startY, 3), fill_value=255, dtype=np.uint8)
+		fontpath = "../static/fonts/OpenDyslexic/OpenDyslexic-Regular.otf"     
+		font = ImageFont.truetype(fontpath, 32)
+		img_pil = Image.fromarray(temp_img)
+		draw = ImageDraw.Draw(img_pil)
+		draw.text((50, 100),  word_selections[i], font = font, fill = (b, g, r, a))
+		img = np.array(img_pil)
 		
+		
+
 	# show the output image
 	cv2.imshow("Text Detection", orig)
 	cv2.waitKey(0)
@@ -157,30 +172,25 @@ def segmentImage(uri, confidence = .5):
 
 
 def detect_document_uri(uri):
-    """Detects document features in the file located in Google Cloud
-    Storage."""
-    from google.cloud import vision
-    client = vision.ImageAnnotatorClient()
-    image = vision.types.Image()
-    image.source.image_uri = uri
+	"""Detects document features in the file located in Google Cloud
+	Storage."""
+	from google.cloud import vision
+	client = vision.ImageAnnotatorClient()
+	image = vision.types.Image()
+	image.source.image_uri = uri
 
-    response = client.document_text_detection(image=image)
+	response = client.document_text_detection(image=image)
 
-    for page in response.full_text_annotation.pages:
-        for block in page.blocks:
-            print('\nBlock confidence: {}\n'.format(block.confidence))
+	for page in response.full_text_annotation.pages:
+		for block in page.blocks:
+			#print('\nBlock confidence: {}\n'.format(block.confidence))
 
-            for paragraph in block.paragraphs:
-                print('Paragraph confidence: {}'.format(
-                    paragraph.confidence))
-
-                for word in paragraph.words:
-                    word_text = ''.join([
-                        symbol.text for symbol in word.symbols
-                    ])
-                    print('Word text: {} (confidence: {})'.format(
-                        word_text, word.confidence))
-
-                    for symbol in word.symbols:
-                        print('\tSymbol: {} (confidence: {})'.format(
-                            symbol.text, symbol.confidence))
+			for paragraph in block.paragraphs:
+				#   print('Paragraph confidence: {}'.format( paragraph.confidence))
+				for word in paragraph.words:
+					word_text = ''.join([symbol.text for symbol in word.symbols])
+					print('Word text: {} (confidence: {})'.format(word_text, word.confidence))
+					return word_text
+					#for symbol in word.symbols:
+					#     print('\tSymbol: {} (confidence: {})'.format(
+					#         symbol.text, symbol.confidence))
