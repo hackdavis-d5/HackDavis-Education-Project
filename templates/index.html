@@ -15,35 +15,7 @@
             <canvas></canvas>
         </div>
 
-        <!-- <script src="js/imgProcess.js"></script> -->
-        <!-- <script src="js/filters.js"></script> -->
-
         <script src="{{ url_for('static', filename='js/socketio/socket.io.js') }}"></script>
-        <script>
-            var socket = io.connect('http://localhost:5000');
-            socket.emit('my event', {data: 'wooooooo data'});
-            socket.on('my response', function(msg) {
-                console.log(msg);
-            });
-            var video = document.querySelector("#videoElement");
-
-            if (navigator.mediaDevices.getUserMedia) {       
-                navigator.mediaDevices.getUserMedia({video: true})
-                    .then(function(stream) {
-                        video.srcObject = stream;
-                    })
-                    .catch(function(err0r) {
-                        console.log("Something went wrong!");
-                    });
-            }
-
-            var canvas = document.createElement('canvas');
-            canvas.width = 640;
-            canvas.height = 480;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            var dataURI = canvas.toDataURL('image/jpeg');
-            console.log(dataURI);
-        </script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     </body>
 </html>
