@@ -131,6 +131,7 @@ def segmentImage(uri, confidence = .5):
 	boxes = non_max_suppression(np.array(rects), probs=confidences)
 
 	# loop over the bounding boxes
+	c = 0
 	for (startX, startY, endX, endY) in boxes:
 		# scale the bounding box coordinates based on the respective
 		# ratios
@@ -138,13 +139,19 @@ def segmentImage(uri, confidence = .5):
 		startY = int(startY * rH)
 		endX = int(endX * rW)
 		endY = int(endY * rH)
-
-		# draw the bounding box on the image
+		
+		images.append(orig[startY:endY, startX:endX]) # Crop from {x, y, w, h } => {0, 0, 300, 400}
+		cv2.imshow("cropped" + str(c), orig[startY:endY, startX:endX])
 		cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
-
+		c += 1
+		#cv2.waitKey(0)
+		# draw the bounding box on the image
+		
 	# show the output image
 	cv2.imshow("Text Detection", orig)
 	cv2.waitKey(0)
+
+	
 
 
 def detect_document_uri(uri):
