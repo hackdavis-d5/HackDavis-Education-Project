@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         initVideo: function() {
 
             const onSuccess = (stream) => {
-                console.log(this.videoElement);
                 this.videoElement.srcObject = stream;
             };
 
@@ -33,8 +32,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         },
         
         initCanvas: function() {
-            this.canvas.width = 640;
-            this.canvas.height = 480;
+            this.canvas.width = 320;
+            this.canvas.height = 320;
         },
 
         initContext: function() {
@@ -55,10 +54,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         initSocket: function() {
             this.sock = io.connect('http://localhost:5000');
-            this.sock.emit('my event', {data: 'wooooooo data'});
-            this.sock.on('my response', function(msg) {
-                console.log(msg);
-            });
+            this.sock.on('ocrComplete', (words) => {
+                if (words) {
+                    const text = words.reduce((acc, curr) => `${acc} ${curr}`, '');
+                    document.querySelector('#output').innerHTML = text;
+                }
+            }); 
         },
 
         send: function(event, message) {

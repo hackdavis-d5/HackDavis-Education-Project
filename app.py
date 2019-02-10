@@ -22,7 +22,10 @@ def socketIODisconnect():
 
 @socketio.on('rawFrame')
 def handleImageFromClient(message):
-    segmentImage(message)
+    words = segmentImage(message)
+    if words != []:
+        emit('ocrComplete', words)
+
 
 if __name__ == '__main__':
     socketio.run(app)
