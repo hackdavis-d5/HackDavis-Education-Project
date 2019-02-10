@@ -7,33 +7,22 @@ import numpy as np
 import argparse
 import time
 import cv2
+import base64
 
 def data_uri_to_cv2_img(uri):
-    encoded_data = uri.split(',')[1]
-    nparr = np.fromstring(encoded_data.decode('base64'), np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    return img
+	encoded_data = uri.split(',')[1]
+	nparr = np.fromstring(base64.b64decode(encoded_data), np.uint8)
+	img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+	return img
 
 
 
 def segmentImage(uri, confidence = .5):
-	# construct the argument parser and parse the arguments
-	# ap = argparse.ArgumentParser()
-	# ap.add_argument("-i", "--image", type=str,
-	# 	help="path to input image")
-	# ap.add_argument("-east", "--east", type=str,
-	# 	help="path to input EAST text detector")
-	# ap.add_argument("-c", "--min-confidence", type=float, default=0.5,
-	# 	help="minimum probability required to inspect a region")
-	# ap.add_argument("-w", "--width", type=int, default=320,
-	# 	help="resized image width (should be multiple of 32)")
-	# ap.add_argument("-e", "--height", type=int, default=320,
-	# 	help="resized image height (should be multiple of 32)")
-	# args = vars(ap.parse_args())
-
 	# load the input image and grab the image dimensions
 		
 	image = data_uri_to_cv2_img(uri)
+
+	print(image)
 
 	orig = image.copy()
 	
@@ -60,7 +49,7 @@ def segmentImage(uri, confidence = .5):
 
 	# load the pre-trained EAST text detector
 	print("[INFO] loading EAST text detector...")
-	net = cv2.dnn.readNet(r"frozen_east_text_detection.pb")
+	net = cv2.dnn.readNet(r"./util/frozen_east_text_detection.pb")
 
 	# construct a blob from the image and then perform a forward pass of
 	# the model to obtain the two output layer sets
@@ -146,7 +135,7 @@ def segmentImage(uri, confidence = .5):
 		cv2.imshow("cropped" + str(c), orig[startY:endY, startX:endX])
 		cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
 		c += 1
-		#cv2.waitKey(0)
+		# cv2.waitKey(0)
 		# draw the bounding box on the image
 		
 	# show the output image
@@ -156,31 +145,31 @@ def segmentImage(uri, confidence = .5):
 	
 
 
-def detect_document_uri(uri):
-    """Detects document features in the file located in Google Cloud
-    Storage."""
-    from google.cloud import vision
-    client = vision.ImageAnnotatorClient()
-    image = vision.types.Image()
-    image.source.image_uri = uri
+# def detect_document_uri(uri):
+#     """Detects document features in the file located in Google Cloud
+#     Storage."""
+#     from google.cloud import vision
+#     client = vision.ImageAnnotatorClient()
+#     image = vision.types.Image()
+#     image.source.image_uri = uri
 
-    response = client.document_text_detection(image=image)
+#     response = client.document_text_detection(image=image)
 
-    for page in response.full_text_annotation.pages:
-        for block in page.blocks:
-            print('\nBlock confidence: {}\n'.format(block.confidence))
+#     for page in response.full_text_annotation.pages:
+#         for block in page.blocks:
+#             print('\nBlock confidence: {}\n'.format(block.confidence))
 
-            for paragraph in block.paragraphs:
-                print('Paragraph confidence: {}'.format(
-                    paragraph.confidence))
+#             for paragraph in block.paragraphs:
+#                 print('Paragraph confidence: {}'.format(
+#                     paragraph.confidence))
 
-                for word in paragraph.words:
-                    word_text = ''.join([
-                        symbol.text for symbol in word.symbols
-                    ])
-                    print('Word text: {} (confidence: {})'.format(
-                        word_text, word.confidence))
+#                 for word in paragraph.words:
+#                     word_text = ''.join([
+#                         symbol.text for symbol in word.symbols
+#                     ])
+#                     print('Word text: {} (confidence: {})'.format(
+#                         word_text, word.confidence))
 
-                    for symbol in word.symbols:
-                        print('\tSymbol: {} (confidence: {})'.format(
-                            symbol.text, symbol.confidence))
+#                     for symbol in word.symbols:
+#                         print('\tSymbol: {} (confidence: {})'.format(
+#                             symbol.text, symbol.confidence))
