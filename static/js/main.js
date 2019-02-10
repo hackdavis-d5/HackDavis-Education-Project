@@ -90,5 +90,5 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     setInterval(function() {
         socket.send('rawFrame', video.getFrameAsBase64URL());
-    }, 200);
+    }, 1000);
 });    
