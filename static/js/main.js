@@ -59,8 +59,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 console.log(msg);
             });
         },
+
+        send: function(event, message) {
+            this.sock.emit(event, message);
+        }
     };
 
     video.init();
     socket.init();
+
+    setInterval(function() {
+        socket.send('rawFrame', video.getFrameAsBase64URL());
+    }, 5000);
 });    

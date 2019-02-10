@@ -8,20 +8,21 @@ app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
 @app.route('/')
-def hello_world():
+def index():
     return render_template('index.html')
 
-@socketio.on('my event')
-def test_message(message):
-    emit('my response', {'data': 'got it!'})
-
 @socketio.on('connect')
-def test_connect():
+def socketIOConnect():
     emit('my response', {'data': 'Connected'})
 
 @socketio.on('disconnect')
-def test_disconnect():
+def socketIODisconnect():
     print('Client disconnected')
+
+@socketio.on('rawFrame')
+def handleImageFromClient(message):
+    print(message)
+
 
 if __name__ == '__main__':
     socketio.run(app)
