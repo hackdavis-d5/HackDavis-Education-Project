@@ -22,9 +22,9 @@ def socketIODisconnect():
 
 @socketio.on('rawFrame')
 def handleImageFromClient(message):
-    words = segmentImage(message)
+    words, vertices = segmentImage(message)
     if words != []:
-        emit('ocrComplete', words)
+        emit('ocrComplete', {"words": words, "vertices": vertices})
 
 
 if __name__ == '__main__':
