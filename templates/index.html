@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <head>
+        <meta charset="utf-8">
+        <meta content="stuff, to, help, search, engines, not" name="keywords">
+        <meta content="What this page is about." name="description">
+        <meta content="Display Webcam Stream" name="title">
+        <title>Display Webcam Stream</title>
+        <!-- <link rel='stylesheet' href='/stylesheets/style.css' /> -->
+    </head>
+    <body>
+        <div id="container">
+            <video autoplay="true" id="videoElement" controls></video>
+            <canvas></canvas>
+        </div>
+
+        <!-- <script src="js/imgProcess.js"></script> -->
+        <!-- <script src="js/filters.js"></script> -->
+
+        <script>
+            var video = document.querySelector("#videoElement");
+
+            if (navigator.mediaDevices.getUserMedia) {       
+                navigator.mediaDevices.getUserMedia({video: true})
+                    .then(function(stream) {
+                        video.srcObject = stream;
+                    })
+                    .catch(function(err0r) {
+                        console.log("Something went wrong!");
+                    });
+            }
+
+            var canvas = document.createElement('canvas');
+            canvas.width = 640;
+            canvas.height = 480;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            var dataURI = canvas.toDataURL('image/jpeg');
+            console.log(dataURI);
+        </script>
+    </body>
+</html>
