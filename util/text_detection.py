@@ -132,6 +132,8 @@ def segmentImage(uri, confidence = .5):
 
 	# loop over the bounding boxes
 	c = 0
+	images = []
+	images_uri = []
 	for (startX, startY, endX, endY) in boxes:
 		# scale the bounding box coordinates based on the respective
 		# ratios
@@ -139,8 +141,8 @@ def segmentImage(uri, confidence = .5):
 		startY = int(startY * rH)
 		endX = int(endX * rW)
 		endY = int(endY * rH)
-		
 		images.append(orig[startY:endY, startX:endX]) # Crop from {x, y, w, h } => {0, 0, 300, 400}
+		images_uri.append(cv2.imencode('.jpeg', orig[startY:endY, startX:endX])[1].tostring()) # Crop from {x, y, w, h } => {0, 0, 300, 400}
 		cv2.imshow("cropped" + str(c), orig[startY:endY, startX:endX])
 		cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
 		c += 1
