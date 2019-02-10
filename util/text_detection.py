@@ -8,16 +8,19 @@ import argparse
 from PIL import ImageFont, ImageDraw, Image
 import time
 import cv2
+import base64
+
 
 net = cv2.dnn.readNet(r"frozen_east_text_detection.pb")
 layerNames = ["feature_fusion/Conv_7/Sigmoid",
 		"feature_fusion/concat_3"]
 
+
 def data_uri_to_cv2_img(uri):
-    encoded_data = uri.split(',')[1]
-    nparr = np.fromstring(encoded_data.decode('base64'), np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    return img
+	encoded_data = uri.split(',')[1]
+	nparr = np.fromstring(base64.b64decode(encoded_data), np.uint8)
+	img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+	return img
 
 def segmentImage(uri, confidence = .5):
 
@@ -43,9 +46,6 @@ def segmentImage(uri, confidence = .5):
 	# we are interested -- the first is the output probabilities and the
 	# second can be used to derive the bounding box coordinates of text
 
-	# load the pre-trained EAST text detector
-	print("[INFO] loading EAST text detector...")
-	
 
 	# construct a blob from the image and then perform a forward pass of
 	# the model to obtain the two output layer sets
@@ -127,7 +127,7 @@ def segmentImage(uri, confidence = .5):
 		startY = int(startY * rH)
 		endX = int(endX * rW)
 		endY = int(endY * rH)
-		
+
 		imageValues.append(startX,startY,endX,endY)
 		images_uri_list.append(cv2.imencode('.jpeg', orig[startY:endY, startX:endX])[1].tostring()) 
 		
@@ -139,6 +139,7 @@ def segmentImage(uri, confidence = .5):
 
 		
 		#cv2.waitKey(0)
+
 		# draw the bounding box on the image
 	word_selections = []
 	b,g,r,a = 0,0,0,0
@@ -165,11 +166,8 @@ def segmentImage(uri, confidence = .5):
 		
 
 	# show the output image
-	cv2.imshow("Text Detection", orig)
-	cv2.waitKey(0)
-
-	
-
+	# cv2.imshow("Text Detection", orig)
+	# cv2.waitKey(0)
 
 def detect_document_uri(uri):
 	"""Detects document features in the file located in Google Cloud

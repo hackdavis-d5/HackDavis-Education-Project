@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import render_template
 from flask_socketio import SocketIO, emit
+from util.text_detection import segmentImage
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -21,8 +22,7 @@ def socketIODisconnect():
 
 @socketio.on('rawFrame')
 def handleImageFromClient(message):
-    print(message)
-
+    segmentImage(message)
 
 if __name__ == '__main__':
     socketio.run(app)
