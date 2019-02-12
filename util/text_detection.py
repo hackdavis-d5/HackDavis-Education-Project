@@ -8,6 +8,7 @@ import argparse
 from PIL import ImageFont, ImageDraw, Image
 import time
 import cv2
+import os
 import base64
 import time
 from google.cloud import vision
@@ -16,7 +17,9 @@ from skimage.filters.rank import entropy
 from skimage.morphology import disk
 from skimage.measure.entropy import shannon_entropy
 # from google.protobuf.json_format import MessageToDict
+from google.cloud.bigquery.client import Client
 
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'./auth-goog.json'
 net = cv2.dnn.readNet(r"./util/frozen_east_text_detection.pb")
 layerNames = ["feature_fusion/Conv_7/Sigmoid",
 		"feature_fusion/concat_3"]
@@ -33,7 +36,9 @@ def segmentImage(uri):
 	image = data_uri_to_cv2_img(uri)
 	path = './img/img' + str(time.time()) + '.jpg'
 	cv2.imwrite(path, image)
-	return detect_document(path)
+	words, vertices = detect_document(path)
+	#os.remove(path)
+	return words, vertices, path
 	
 	# cv2.imwrite(path, thresh)
 
