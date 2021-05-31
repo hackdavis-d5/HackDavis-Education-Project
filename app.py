@@ -2,7 +2,7 @@ from flask import Flask
 from flask import render_template
 from flask_socketio import SocketIO, emit
 from util.text_detection import segmentImage
-
+import os
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 
@@ -22,9 +22,10 @@ def socketIODisconnect():
 
 @socketio.on('rawFrame')
 def handleImageFromClient(message):
-    words, vertices = segmentImage(message)
+    words, vertices, path = segmentImage(message)
     if words != []:
         emit('ocrComplete', {"words": words, "vertices": vertices})
+    os.remove(path)
 
 
 if __name__ == '__main__':

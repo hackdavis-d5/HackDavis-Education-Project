@@ -1,3 +1,6 @@
 __pycache__
 .vscode
 *.pyc
+img/*
+./auth-goog
+./google-cloud-credentials

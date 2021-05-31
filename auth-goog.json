@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "my-project-1500627263417",
+  "private_key_id": "e1fc56c7c85858b2cbad95dc05fe2f5d501b1a7d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDKmUAzJVKNAX2a\nWtJDzXOC6EHCrHeF/i/iMieLy0rTDDar3JhOlHE1uc89ubTJYC9dncVFKPFfufSl\n36jYR6KLdbzzhDxhIglPPsQHez9Oomfhbs25FpG0KnJ+8nM0+2qrzVu4eXvzRaGp\nVe9yAxW6rem4Z8IMEY9XLZyrTA7kxccWwz/mgI5Xbv2qkR1Nz6PZIAmDGmf57Ioh\nXPGTXyLHjNUMyjKtyZck7S7w4wZGZ7EHwnsv5wtZqV+MaDaP/Y5GvxTuXkW8tlxF\nRGPXCQ+6TyHg/7xTFpHgpL/w5alrIl+3ycduRy+4HNtvaqtn9o8xA6rwtZ7gz5J+\nkwrh3+7HAgMBAAECggEAUA/ItY2BtlRI+Pb8Eaw+ghRbbF1wbESbUpWEWDORkZ5J\nepgVnjP+Gv+fHKLnBQ9cGHAxFVgNLsmTGvusQy/n1ZnE/iybGb10FVtV5yj2xxHZ\n4FXDuWloUdzWW0FfcqgKKvNf1CI579RsArmBgroiW5+/dU6XeeJ0lTxipbTMS+4C\nMyZEWiIwK03RT14UnQNTTMz9WErjrPiZkWGJ/u+yU/6Gu2Bm45/WQKaoRuPn6x0c\nwCFNpjuWWdDPx/vEICEMcV3rwL2WWxmL7qWcELM9mpkf3xrIvoSqco4QzhJICITv\nD1lImMms6lRkHY5fQMMIu8oTQUap6WKXeLTlFo1fDQKBgQDwMyUot9Ll/D9m/ana\nXS94Vlu+EB7HNPFapHKHIWnM16QMkDA8wts+mGojE9m/pRaz/Vb/bPmZTmo8uEnP\nmll2FA2fB568Eg8178G1Fkh8+DzGZUIm6FZVCFUbmqva0WscRLe0w0ibxg0s3wWm\nb2vvb9yOiLdXHyH3wKQgN5R6/QKBgQDX7OtelLBBHDIMetzpj6lxlmKXrXBgg9uX\n7ioD9Jfbpq9AcGR2NiWRdyCM8Btmxm7qdHpIeBpFn3Ov9IAuVLSuL1vDeuwMPL2R\nadzdLbLnlKYoxbnwDBXshPU3u1dHAOcsjbs2FtbYHFXUWpteHDKnomc6V/iOICRD\nJ7xl1GJmEwKBgQDeCCj9Lo8AkN96sFhlxWWv8wPy+Ku6sLG5e/Fx/+zwsRSvmEk+\noVBQ2EqkCiFqCYym7DOTAITotZd2cVOpV6ACih7dNgoBByCQVwPUBLkU69IiAk/X\n70R+baleTuc06gf8pXi62xkvBTAAnld2teAsAFb8Wlw/aEPZ5HTSYw4ZcQKBgHbe\nsAjGlG2Txx3Fub4+34pvvuE/kyEfFhIDBFBfJAbBMbOo7DWDw5TcXygXuw4Oadta\nukMRE22GxZp1YOegrENEQSFRl4d5HOdjvzpoQRhqZjsF90HmdV9bJuBCm160aY/G\niuzRD/+zQbEBHI1nup88sdWVvnkHys7Jnlb04CLPAoGAEtDqeUB1qJC/YFxKMy4/\nFDVIr1Q+dbRWpN1TfpKe+A9NUmww8IhOiAhiZH/fnILCUw5jTPqNv3wl1izoVbCB\nCCfvGJenap73KyduCxt2gIQ7gjnY7I5FKAs8bu+jYDDUAuHWAxuSpqza/DJcDnUU\n80l18A6hF9MvwMDmZ+P99S4=\n-----END PRIVATE KEY-----\n",
+  "client_email": "hackdavis-project@my-project-1500627263417.iam.gserviceaccount.com",
+  "client_id": "115622405220856840344",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/hackdavis-project%40my-project-1500627263417.iam.gserviceaccount.com"
+}
